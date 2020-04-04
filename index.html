@@ -160,6 +160,94 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/04/Chapter9%20-%20Interfaces/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/1.jpg">
+      <meta itemprop="name" content="Stephen Chan">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Bowen's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/04/Chapter9%20-%20Interfaces/" class="post-title-link" itemprop="url">Chapter9-Interfaces</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-04-04 13:24:57" itemprop="dateCreated datePublished" datetime="2020-04-04T13:24:57+08:00">2020-04-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-04-05 00:57:36" itemprop="dateModified" datetime="2020-04-05T00:57:36+08:00">2020-04-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Thinking-in-java/" itemprop="url" rel="index"><span itemprop="name">Thinking in java</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Chapter9-Interfaces"><a href="#Chapter9-Interfaces" class="headerlink" title="Chapter9 - Interfaces"></a>Chapter9 - Interfaces</h1><h4 id="impulse"><a href="#impulse" class="headerlink" title="impulse"></a>impulse</h4><p>noun. 冲动，心血来潮</p>
+<p>a sudden strong wish or need to do sth, without stopping to think about the results  </p>
+<hr>
+<h4 id="exhaustive"><a href="#exhaustive" class="headerlink" title="exhaustive"></a>exhaustive</h4><p>adj. 详尽的</p>
+<p>including everything possible; very thorough or complete  </p>
+<hr>
+<h4 id="decouple"><a href="#decouple" class="headerlink" title="decouple"></a>decouple</h4><p>v. 分离，隔断 , 解耦</p>
+<p>to end the connection or relationship between two things  </p>
+<hr>
+<h4 id="identical"><a href="#identical" class="headerlink" title="identical"></a>identical</h4><p>adj. 完全同样的，相同的</p>
+<p>similar in every detail  </p>
+<hr>
+<h4 id="premature"><a href="#premature" class="headerlink" title="premature"></a>premature</h4><p>adj. 未成熟的；过早的</p>
+<p>happening before the normal or expected time  </p>
+<hr>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/03/Chapter8%20-%20Pitfall/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -191,7 +279,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-04-04 12:11:45" itemprop="dateModified" datetime="2020-04-04T12:11:45+08:00">2020-04-04</time>
+                <time title="Modified: 2020-04-04 13:24:36" itemprop="dateModified" datetime="2020-04-04T13:24:36+08:00">2020-04-04</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -237,7 +325,7 @@
 
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// OUTPUT:</span></span><br><span class="line"><span class="function">before <span class="title">f</span><span class="params">()</span></span></span><br><span class="line"><span class="function">Derived.<span class="title">f</span><span class="params">()</span>,number </span>= <span class="number">0</span></span><br><span class="line"><span class="function">after <span class="title">f</span><span class="params">()</span></span></span><br><span class="line"><span class="function">Derived.<span class="title">Derived</span><span class="params">()</span>,number </span>= <span class="number">2</span></span><br></pre></td></tr></table></figure>
 
-<p>当我们调用<code>new Derived(2)</code>时，可能会认为基类构造器<code>Base()</code>调用的方法<code>f()</code>得到的结果是<code>&quot;Base.f()&quot;</code>，但得到的结果却是<code>&quot;Derived.f(),number = 0&quot;</code> ?</p>
+<p>当我们调用<code>new Derived(2)</code>时，可能会认为基类构造器<code>Base()</code>调用的方法<code>f()</code>所得到的结果是<code>&quot;Base.f()&quot;</code>，但得到的结果却是<code>&quot;Derived.f(),number = 0&quot;</code> ?</p>
 <p>其原因是<code>void f()</code>在Derived类中被覆盖，所以其实调用的是<code>Derived.f()</code>方法。</p>
 <p>但是既然<code>void f()</code>在Derived类中被覆盖，我们认为得到的结果理应是<code>&quot;Derived.Derived(),number = 2&quot;</code>，但结果却是<code>&quot;Derived.f(),number = 0&quot;</code> ?</p>
 <p>其原因是这与初始化顺序有关。其初始化的实际过程是：</p>
