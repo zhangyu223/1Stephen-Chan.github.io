@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Strings - 探究字符串1. &#x3D;&#x3D; 运算符 与 equals() 方法基本类型12345678910public class Test &amp;#123;    public static void main(String[] args) &amp;#123;        char a1 &#x3D; &#39;a&#39;,             a2 &#x3D; &#39;a&#39;,             a3 &#x3D; &#39;b&#39;;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Strings - 探究字符串">
+<meta property="og:url" content="http://yoursite.com/2020/04/21/Chapter13-Thinking-In-Strings/index.html">
+<meta property="og:site_name" content="Bowen&#39;s Blog">
+<meta property="og:description" content="Strings - 探究字符串1. &#x3D;&#x3D; 运算符 与 equals() 方法基本类型12345678910public class Test &amp;#123;    public static void main(String[] args) &amp;#123;        char a1 &#x3D; &#39;a&#39;,             a2 &#x3D; &#39;a&#39;,             a3 &#x3D; &#39;b&#39;;">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/2020/04/21/Chapter13-Thinking-In-Strings/p1.png">
+<meta property="og:image" content="http://yoursite.com/2020/04/21/Chapter13-Thinking-In-Strings/p2.png">
+<meta property="og:image" content="http://yoursite.com/2020/04/21/Chapter13-Thinking-In-Strings/p3.png">
+<meta property="og:image" content="http://yoursite.com/2020/04/21/Chapter13-Thinking-In-Strings/p4.png">
+<meta property="og:image" content="http://yoursite.com/2020/04/21/Chapter13-Thinking-In-Strings/p5.png">
+<meta property="og:image" content="http://yoursite.com/2020/04/21/Chapter13-Thinking-In-Strings/p6.png">
+<meta property="article:published_time" content="2020-04-21T08:09:49.000Z">
+<meta property="article:modified_time" content="2020-05-02T14:44:54.755Z">
+<meta property="article:author" content="Stephen Chan">
+<meta property="article:tag" content="java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/04/21/Chapter13-Thinking-In-Strings/p1.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/04/21/Chapter13-Thinking-In-Strings/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Strings - 探究字符串 | Bowen's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Bowen's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/21/Chapter13-Thinking-In-Strings/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/1.jpg">
+      <meta itemprop="name" content="Stephen Chan">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Bowen's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Strings - 探究字符串
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-04-21 16:09:49" itemprop="dateCreated datePublished" datetime="2020-04-21T16:09:49+08:00">2020-04-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-05-02 22:44:54" itemprop="dateModified" datetime="2020-05-02T22:44:54+08:00">2020-05-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Thinking-in-java/" itemprop="url" rel="index"><span itemprop="name">Thinking in java</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2020/04/21/Chapter13-Thinking-In-Strings/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/04/21/Chapter13-Thinking-In-Strings/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Strings-探究字符串"><a href="#Strings-探究字符串" class="headerlink" title="Strings - 探究字符串"></a>Strings - 探究字符串</h1><h4 id="1-运算符-与-equals-方法"><a href="#1-运算符-与-equals-方法" class="headerlink" title="1. == 运算符 与 equals() 方法"></a>1. <code>==</code> 运算符 与 <code>equals()</code> 方法</h4><h5 id="基本类型"><a href="#基本类型" class="headerlink" title="基本类型"></a>基本类型</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">char</span> a1 = <span class="string">'a'</span>,</span><br><span class="line">             a2 = <span class="string">'a'</span>,</span><br><span class="line">             a3 = <span class="string">'b'</span>;</span><br><span class="line">        System.out.println((a1 == a2)); </span><br><span class="line">        System.out.println((a1 == a3));</span><br><span class="line">        <span class="comment">// a1.equals(a3);  not exist</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; OUTPUT:</span><br><span class="line">true</span><br><span class="line">false</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><code>==</code> 运算符：<strong>比较的是两个变量的值</strong></li>
+<li><code>equals()</code> 方法：<strong>基本类型不能使用</strong><code>equals()</code></li>
+</ol>
+<h5 id="包装器类型"><a href="#包装器类型" class="headerlink" title="包装器类型"></a>包装器类型</h5><a id="more"></a>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Character a1 = <span class="keyword">new</span> Character(<span class="string">'a'</span>);</span><br><span class="line">        Character a2 = <span class="keyword">new</span> Character(<span class="string">'a'</span>);</span><br><span class="line">        Character a3 = <span class="keyword">new</span> Character(<span class="string">'b'</span>);</span><br><span class="line">        System.out.println((a1 == a2));       </span><br><span class="line">        System.out.println((a1.equals(a2)));</span><br><span class="line">        System.out.println((a1.equals(a3)));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; OUTPUT:</span><br><span class="line">false</span><br><span class="line">true</span><br><span class="line">false</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><code>==</code> 运算符：<strong>比较的是两个变量存储的值即对象的内存地址</strong>。<code>a1</code>所存储的值为<code>0x100</code>，<code>a2</code>所存储的值为<code>0x200</code>，所以<code>a1 == a2</code>会返回<code>false</code>结果</li>
+</ol>
+<p><img src="/2020/04/21/Chapter13-Thinking-In-Strings/p1.png" alt></p>
+<ol start="2">
+<li><code>equals()</code> 方法：<strong>比较的是两个变量所指向的对象的值</strong>。根据Character.java提供的部分源码，我们可以得知<code>Character</code>包装器类所比较的是其<code>value</code>的值</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">char</span> value;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">Character</span><span class="params">(<span class="keyword">char</span> value)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">this</span>.value = value;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object obj)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (obj <span class="keyword">instanceof</span> Character) &#123;</span><br><span class="line">        <span class="keyword">return</span> value ==((Character)obj).charValue();  <span class="comment">// charValue(): return value;</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="引用类型"><a href="#引用类型" class="headerlink" title="引用类型"></a>引用类型</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span></span>&#123;&#125;</span><br><span class="line"><span class="comment">// class Person extends Object&#123;&#125;</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Person p1 = <span class="keyword">new</span> Person();</span><br><span class="line">        Person p2 = <span class="keyword">new</span> Person();</span><br><span class="line">     </span><br><span class="line">        System.out.println(p1 == p2);</span><br><span class="line">        System.out.println(p1.equals(p2));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; OUTPUT:</span><br><span class="line">false</span><br><span class="line">false</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><code>==</code> 运算符：根据包装器类型得出的结论，我们大胆猜测<code>==</code>运算符应该也是<strong>比较两个变量存储的值即对象的内存地址</strong>。为了验证这一点，我们先了解一下<code>hashCode()</code>：将对象映射为一个整型值，不同的对象返回不同的数值</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* (This is typically implemented by converting the internal</span></span><br><span class="line"><span class="comment"> * address of the object into an integer, but this implementation</span></span><br><span class="line"><span class="comment"> * technique is not required by the</span></span><br><span class="line"><span class="comment"> * Java&amp;trade; programming language.)</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">native</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>注解的意思是：hash值是通过这个对象的内部地址转化后得到的整型值</p>
+<p>我们在看看Object.java中<code>toString()</code>方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> getClass().getName() + <span class="string">"@"</span> + Integer.toHexString(hashCode());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因为hash值与对象内部地址有关，我们先姑且认为<code>toString</code>方法返回的就是对象的”内部地址”</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">System.out.println(p1);</span><br><span class="line">System.out.println(p2);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; OUTPUT:</span><br><span class="line">Person@1b6d3586</span><br><span class="line">Person@4554617c</span><br></pre></td></tr></table></figure>
+
+<p>根据输出结果，我们可以得知这两个hash值完全不同，所以<code>==</code>得到的结果为<code>false</code></p>
+<p>我们再创建一个Person引用变量p3，把p1的值赋值给p3，<code>==</code>结果会如何 ？</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Person p3 = p1;</span><br><span class="line">System.out.println(p1 == p3);</span><br><span class="line">System.out.println(p1);</span><br><span class="line">System.out.println(p3);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; OUTPUT:</span><br><span class="line">true</span><br><span class="line">Person@1b6d3586</span><br><span class="line">Person@1b6d3586</span><br></pre></td></tr></table></figure>
+
+<p>答案很明显是<code>true</code>，参考以下图方便理解</p>
+<p><img src="/2020/04/21/Chapter13-Thinking-In-Strings/p2.png" alt></p>
+<ol start="2">
+<li><code>equals()</code> 方法：根据Object.java的源码可知，<code>equals()</code><strong>比较两个变量存储的值即对象的内存地址</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object obj)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (<span class="keyword">this</span> == obj);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>注解：事实上Java的内存操作是不可见的，都是通过JVM进行内存控制管理，无论通过<code>hashCode()</code>还是<code>identityHashCode()</code>得到的结果只是由对象地址值通过算法得来的</p>
+<p>参考资料：<a href="https://www.jianshu.com/p/24fa4bdb9b9d" target="_blank" rel="noopener">https://www.jianshu.com/p/24fa4bdb9b9d</a> - System.identityHashCode(obj) 与 obj.hashcode()</p>
+<h5 id="字符串类型"><a href="#字符串类型" class="headerlink" title="字符串类型"></a>字符串类型</h5><h6 id="构造方法"><a href="#构造方法" class="headerlink" title="构造方法"></a>构造方法</h6><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">char</span>[] charArray = &#123;<span class="string">'h'</span>,<span class="string">'e'</span>,<span class="string">'l'</span>,<span class="string">'l'</span>,<span class="string">'o'</span>&#125;;</span><br><span class="line">        String str1 = <span class="keyword">new</span> String(<span class="string">"hello"</span>);		<span class="comment">// String(String original)</span></span><br><span class="line">        String str2 = <span class="keyword">new</span> String(charArray);	<span class="comment">// String(char value[])</span></span><br><span class="line">        System.out.println(str1 == str2);</span><br><span class="line">        System.out.println(str1.equals(str2));</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// OUTPUT:</span></span><br><span class="line"><span class="keyword">false</span></span><br><span class="line"><span class="keyword">true</span></span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><code>==</code> 运算符：由引用类型得来的结论可知，<code>==</code>运算符是<strong>比较两个变量存储的值即对象的内存地址</strong></li>
+<li><code>equals()</code> 方法：根据String.java部分源码可知，<code>equals()</code><strong>比较的是两个变量所指向的对象的值即</strong><code>value[]</code></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">char</span> value[];</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object anObject)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span> == anObject) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (anObject <span class="keyword">instanceof</span> String) &#123;</span><br><span class="line">            String anotherString = (String)anObject;</span><br><span class="line">            <span class="keyword">int</span> n = value.length;</span><br><span class="line">            <span class="keyword">if</span> (n == anotherString.value.length) &#123;</span><br><span class="line">                <span class="keyword">char</span> v1[] = value;</span><br><span class="line">                <span class="keyword">char</span> v2[] = anotherString.value;</span><br><span class="line">                <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">                <span class="keyword">while</span> (n-- != <span class="number">0</span>) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (v1[i] != v2[i])</span><br><span class="line">                        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">                    i++;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h6 id="直接赋值"><a href="#直接赋值" class="headerlink" title="直接赋值"></a>直接赋值</h6><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        String str1 = <span class="string">"hello"</span>;</span><br><span class="line">        String str2 = <span class="string">"hello"</span>;</span><br><span class="line">        String str3 = <span class="keyword">new</span> String(<span class="string">"hello"</span>);</span><br><span class="line">        System.out.println(str1 == str2);</span><br><span class="line">        System.out.println(str1.equals(str2));</span><br><span class="line">        System.out.println(str1.equals(str3));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; OUTPUT:</span><br><span class="line">true</span><br><span class="line">true</span><br><span class="line">true</span><br></pre></td></tr></table></figure>
+
+<p>我们先来讨论<code>equals()</code>，根据String.java的源码我们很容易可知<code>equals()</code><strong>比较的是两个变量所指向的对象的值</strong></p>
+<p>但是当<code>str1 == str2</code>得到的结果为<code>true</code>，我们会觉得摸不着头脑，难道结果不应该是<code>false</code>吗，难道不是因为<code>str1</code>和<code>str2</code>在栈中分别<code>new</code>了两个新的对象，两个新的对象地址值不同，所以两个引用变量通过<code>==</code>运算结果才为<code>false</code>? </p>
+<p>原因是：<strong>字符串常量池(String Pool)</strong></p>
+<h4 id="2-字符串常量池"><a href="#2-字符串常量池" class="headerlink" title="2. 字符串常量池"></a>2. 字符串常量池</h4><ul>
+<li><p>常量池：用于保存Java在编译期就已经确定的，已经编译的class文件中的一份数据。包括了类、方法、接口中的常量，也包括字符串常量，如<code>String str1 = &quot;hello&quot;;</code>这种声明方式</p>
+</li>
+<li><p>为了减少在JVM中创建的字符串的数量，字符串类维护了一个字符串常量池，字符串常量池是Java堆内存中一个特殊的存储区域</p>
+</li>
+<li><p>当创建String对象时，JVM会先检查字符串常量池，如果这个字符串的常量值已经存在在池中了，就直接返回池中对象的引用，如果不在池中，就会实例化一个字符串并放入池中</p>
+<p><img src="/2020/04/21/Chapter13-Thinking-In-Strings/p3.png" alt></p>
+</li>
+</ul>
+<p>所以根据字符串常量池的相关概念，当<code>String str1 = &quot;hello&quot;;</code>，JVM便会在字符串常量池中搜索是否存在字符串”hello”，如果没有，便会实例化生成一个字符串”hello”存入池中。当<code>String str2 = &quot;hello&quot;;</code>，JVM发现在字符串常量池中存在字符串”hello”，便会返回一个引用即字符串”hello”的内存地址<code>0x100</code>赋值给<code>str2</code>，所以<code>str1 == str2</code>的结果为<code>true</code>，因为它们指向的都是同一个字符串对象”hello”</p>
+<h4 id="3-intern-方法"><a href="#3-intern-方法" class="headerlink" title="3. intern() 方法"></a>3. <code>intern()</code> 方法</h4><p>当调用<code>intern()</code>方法时，如果字符串常量池中已经包含一个等于此 String 对象的字符串，则返回池中的字符串引用。否则，将此 String 对象添加到池中，并且返回此 String 对象的引用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        String str1 = <span class="string">"hello"</span>;</span><br><span class="line">        String str2 = <span class="keyword">new</span> String(<span class="string">"hello"</span>);</span><br><span class="line">        System.out.println(str1 == str2);</span><br><span class="line">        System.out.println(str1 == str2.intern());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; OUTPUT:</span><br><span class="line">false</span><br><span class="line">true</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2020/04/21/Chapter13-Thinking-In-Strings/p4.png" alt></p>
+<h4 id="4-字符串类型的-运算"><a href="#4-字符串类型的-运算" class="headerlink" title="4. 字符串类型的 == 运算"></a>4. 字符串类型的 <code>==</code> 运算</h4><ul>
+<li>下列代码创建了几个对象？</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">String str1 = <span class="keyword">new</span> String(<span class="string">"hello"</span>);</span><br></pre></td></tr></table></figure>
+
+<p>总共创建了<strong>两个对象</strong></p>
+<p>第一个对象是“hello”字符串，存储在常量池中（在编译期间存储）</p>
+<p>第二个对象是创建在堆上的String对象（在运行期间创建）</p>
+<p><img src="/2020/04/21/Chapter13-Thinking-In-Strings/p5.png" alt></p>
+<ul>
+<li>下列语句运行结果？</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">String str1 = <span class="string">"hello world"</span>;</span><br><span class="line">String str2 = <span class="string">"hello"</span> +<span class="string">" world"</span>;</span><br><span class="line">System.out.println(str1 == str2);</span><br></pre></td></tr></table></figure>
+
+<p>结果为<code>true</code></p>
+<p>因为当连接符<code>+</code>连接的仅仅是常量时，创建后的结果也是一个常量。当<code>&quot;hello&quot; +&quot; world&quot;</code>得到的结果为“hello world”时，便会在常量池中判断此字符串是否存在，若存在，便返回字符串“hello world”引用</p>
+<p><img src="/2020/04/21/Chapter13-Thinking-In-Strings/p6.png" alt></p>
+<ul>
+<li>下列语句运行结果？</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">String str1 = <span class="string">"hello world"</span>;</span><br><span class="line">String str2 = <span class="string">"hello world"</span>;</span><br><span class="line">str2 = str2 + <span class="string">""</span>;</span><br><span class="line">System.out.println(str1 == str2);</span><br></pre></td></tr></table></figure>
+
+<p>结果为<code>false</code></p>
+<p>原因我们来看一看反编译后生成的JVM字节码</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">0: ldc           <span class="comment">#2                  // String hello world</span></span><br><span class="line">2: astore_1</span><br><span class="line">3: ldc           <span class="comment">#2                  // String hello world</span></span><br><span class="line">5: astore_2</span><br><span class="line">6: new           <span class="comment">#3                  // class java/lang/StringBuilder</span></span><br><span class="line">9: dup</span><br><span class="line">10: invokespecial <span class="comment">#4                 // Method java/lang/StringBuilder."&lt;init&gt;":()V</span></span><br><span class="line">13: aload_2</span><br><span class="line">14: invokevirtual <span class="comment">#5                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span></span><br><span class="line">17: ldc           <span class="comment">#6                 // String</span></span><br><span class="line">19: invokevirtual <span class="comment">#5                 </span></span><br><span class="line">// Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span><br><span class="line">22: invokevirtual <span class="comment">#7                 </span></span><br><span class="line">// Method  java/lang/StringBuilder.toString()Ljava/lang/String;</span><br></pre></td></tr></table></figure>
+
+<p>当<code>str2 = str2 + &quot;&quot;;</code>进行运算时，编译器自动在堆中创建了一个<code>StringBuilder</code>帮我们把字符串进行拼接，最后使用<code>StringBuilder.toString()</code>返回一个在堆中的String对象</p>
+<p>参考资料：<a href="https://www.jianshu.com/p/039d6df30fea" target="_blank" rel="noopener">https://www.jianshu.com/p/039d6df30fea</a> - String的字符串常量池面试题</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/java/" rel="tag"># java</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/04/20/Chapter13%20-%20Strings/" rel="prev" title="Chapter13 - Strings">
+      <i class="fa fa-chevron-left"></i> Chapter13 - Strings
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Strings-探究字符串"><span class="nav-number">1.</span> <span class="nav-text">Strings - 探究字符串</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-运算符-与-equals-方法"><span class="nav-number">1.0.0.1.</span> <span class="nav-text">1. &#x3D;&#x3D; 运算符 与 equals() 方法</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#基本类型"><span class="nav-number">1.0.0.1.1.</span> <span class="nav-text">基本类型</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#包装器类型"><span class="nav-number">1.0.0.1.2.</span> <span class="nav-text">包装器类型</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#引用类型"><span class="nav-number">1.0.0.1.3.</span> <span class="nav-text">引用类型</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#字符串类型"><span class="nav-number">1.0.0.1.4.</span> <span class="nav-text">字符串类型</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#构造方法"><span class="nav-number">1.0.0.1.4.1.</span> <span class="nav-text">构造方法</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#直接赋值"><span class="nav-number">1.0.0.1.4.2.</span> <span class="nav-text">直接赋值</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-字符串常量池"><span class="nav-number">1.0.0.2.</span> <span class="nav-text">2. 字符串常量池</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-intern-方法"><span class="nav-number">1.0.0.3.</span> <span class="nav-text">3. intern() 方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-字符串类型的-运算"><span class="nav-number">1.0.0.4.</span> <span class="nav-text">4. 字符串类型的 &#x3D;&#x3D; 运算</span></a></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Stephen Chan"
+      src="/images/1.jpg">
+  <p class="site-author-name" itemprop="name">Stephen Chan</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/1Stephen-Chan" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;1Stephen-Chan" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/bowen-chen@outlook.com" title="E-Mail → bowen-chen@outlook.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Stephen Chan</span>
+</div>
+  <!--<div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+  -->
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script color='' opacity='' zIndex='' count='' src="/lib/canvas-nest/canvas-nest-nomobile.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'gPkze1BrMk5ngcc225s3B1ex-gzGzoHsz',
+      appKey     : 'bKY0h2zy5yiz7O61i7RaaU34',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
